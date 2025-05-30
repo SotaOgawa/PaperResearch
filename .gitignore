@@ -60,4 +60,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# test files
+sandbox.go
+
+papers.db
+
 # End of https://www.toptal.com/developers/gitignore/api/go,nextjs
