@@ -146,3 +146,13 @@
 - Sprint Retrospective
   - 次のSprintへと順調に進められる
   - Go、Next.jsに理解を深めながら実装していきたい
+
+### Sprint 2
+
+#### DoD
+
+- APIの実装、機能するものを作成すること
+- SQLiteを用いたローカルDBでデータが永続化されている
+- curlでの動作確認
+- README.mdに使い方が記述されている
+- テストケースが書かれている
