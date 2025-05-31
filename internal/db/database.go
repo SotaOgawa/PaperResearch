@@ -1,9 +1,9 @@
 package db
 
 import (
-	"log"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"log"
 	"paper-app-backend/internal/model"
 )
 

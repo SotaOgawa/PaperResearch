@@ -1,10 +1,10 @@
 package crawler
 
 type RawPaper struct {
-	Title	   string `json:"title"`
+	Title   string   `json:"title"`
 	Authors []string `json:"authors"`
-	Venue 	 string `json:"venue"`
-	Year 	   int    `json:"year"`
+	Venue   string   `json:"venue"`
+	Year    int      `json:"year"`
 }
 
 type ConferenceCrawler interface {
@@ -65,5 +65,5 @@ type OpenReviewResponseNote struct {
 
 type OpenReviewResponse struct {
 	Notes []OpenReviewResponseNote `json:"notes"`
-	Count int `json:"count"`
+	Count int                      `json:"count"`
 }

@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"net/http"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"paper-app-backend/internal/model"
+	"net/http"
 	"paper-app-backend/internal/db"
+	"paper-app-backend/internal/model"
 	"strconv"
 )
 
@@ -22,10 +22,10 @@ func GetPapersWithDB(c *gin.Context, db *gorm.DB) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	queryFiltered := paperQuery.Apply(db)
 
-	err = queryFiltered.Find(&papers).Error; 
+	err = queryFiltered.Find(&papers).Error
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -41,8 +41,8 @@ func CreatePaper(c *gin.Context) {
 func CreatePaperWithDB(c *gin.Context, db *gorm.DB) {
 	var newPaper model.Paper
 
-	err := c.ShouldBindJSON(&newPaper); 
-	
+	err := c.ShouldBindJSON(&newPaper)
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid input data"})
 		return
@@ -68,7 +68,7 @@ func UpdatePaper(c *gin.Context) {
 func UpdatePaperWithDB(c *gin.Context, db *gorm.DB) {
 	var updatedPaper model.Paper
 
-	err := c.ShouldBindJSON(&updatedPaper); 
+	err := c.ShouldBindJSON(&updatedPaper)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid input data"})
 		return

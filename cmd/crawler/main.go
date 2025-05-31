@@ -1,12 +1,12 @@
 package main
 
 import (
-	"paper-app-backend/internal/conference"
 	"fmt"
+	"paper-app-backend/internal/conference"
 	"strings"
 )
 
-func main(){
+func main() {
 	crawlerICML := conference.NewICMLConferenceCrawler(2023)
 	paperlist, err := crawlerICML.Crawl()
 	if err != nil {

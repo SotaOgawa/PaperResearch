@@ -5,10 +5,10 @@ import (
 )
 
 type PaperSearchQuery struct {
-	ID 			int   	`form:"ID"`
-	Title      	string 	`form:"title"`
-	Conference 	string 	`form:"conference"`
-	Year       	int    	`form:"year"`
+	ID         int    `form:"ID"`
+	Title      string `form:"title"`
+	Conference string `form:"conference"`
+	Year       int    `form:"year"`
 }
 
 func (q *PaperSearchQuery) Apply(db *gorm.DB) *gorm.DB {

@@ -1,37 +1,35 @@
 package model_test
 
 import (
-	"gorm.io/gorm"
-	"testing"
-	"gorm.io/driver/sqlite"
-	"paper-app-backend/internal/model"
 	"github.com/stretchr/testify/require"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+	"paper-app-backend/internal/model"
+	"testing"
 )
 
-
-
-func TestPaperAuthor_SaveAndQuery(t *testing.T){
+func TestPaperAuthor_SaveAndQuery(t *testing.T) {
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	require.NoError(t, err)
 
 	db.AutoMigrate(&model.Author{}, &model.Paper{}, &model.PaperAuthorConnection{})
 
 	p := model.Paper{
-		Title: "Test Paper",
-		Abstract: "This is a test abstract.",
+		Title:      "Test Paper",
+		Abstract:   "This is a test abstract.",
 		Conference: "Test Conference",
-		Year: 2023,
-		ID: 1,
+		Year:       2023,
+		ID:         1,
 	}
 
 	a := model.Author{
 		Name: "Test Author",
-		ID: 10,
+		ID:   10,
 	}
 
 	conn := model.PaperAuthorConnection{
-		PaperID: p.ID,
-		AuthorID: a.ID,
+		PaperID:     p.ID,
+		AuthorID:    a.ID,
 		AuthorOrder: 1,
 	}
 
