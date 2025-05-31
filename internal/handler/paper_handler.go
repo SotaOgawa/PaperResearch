@@ -14,7 +14,7 @@ func GetPapers(c *gin.Context) {
 
 func GetPapersWithDB(c *gin.Context, db *gorm.DB) {
 	var papers []model.Paper
-	var paperQuery PaperQuery
+	var paperQuery PaperSearchQuery
 
 	err := c.ShouldBindQuery(&paperQuery)
 	if err != nil {
