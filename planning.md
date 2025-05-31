@@ -168,3 +168,6 @@
   | PUT      | `/api/papers/:id` | 論文の更新                   |
   | DELETE   | `/api/papers/:id` | 論文の削除                   |
   
+- 実装完了
+
+#### 

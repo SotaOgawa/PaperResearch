@@ -2,12 +2,16 @@ package main
 
 import (
     "github.com/gin-gonic/gin"
+    "paper-app-backend/internal/router"
+    "paper-app-backend/internal/db"
 )
 
 func main() {
+    // データベースの初期化
+    db.InitDB()
+
+    // ルーターのセットアップ
     r := gin.Default()
-    r.GET("/ping", func(c *gin.Context) {
-        c.JSON(200, gin.H{"message": "pong"})
-    })
+    router.SetupRoutes(r)
     r.Run() // デフォルトは :8080
 }
