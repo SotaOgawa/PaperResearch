@@ -10,4 +10,5 @@ type RawPaper struct {
 type ConferenceCrawler interface {
 	Crawl() ([]RawPaper, error)
 	Name() string
+	Year() int
 }
