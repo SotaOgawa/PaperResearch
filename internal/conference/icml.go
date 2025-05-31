@@ -31,7 +31,7 @@ func (c *ICMLConferenceCrawler) Crawl() ([]crawler.RawPaper, error) {
 	var papers []crawler.RawPaper // 取得した論文のリスト
 
 	for {
-		resp, err := http.Get("https://api2.openreview.net/notes?content.venueid=ICLR.cc%2F2024%2FConference&offset=" + strconv.Itoa(offset))
+		resp, err := http.Get("https://api2.openreview.net/notes?content.venueid=ICML.cc%2F" + strconv.Itoa(c.Year()) + "%2FConference&offset=" + strconv.Itoa(offset))
 
 		if err != nil {
 			return nil, fmt.Errorf("failed to make request: %w", err)
