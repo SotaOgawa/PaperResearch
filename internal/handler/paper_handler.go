@@ -9,7 +9,18 @@ import (
 
 func GetPapers(c *gin.Context) {
 	var papers []model.Paper
-	err := db.DB.Find(&papers).Error; 
+	var paperQuery PaperQuery
+
+	err := c.ShouldBindQuery(&paperQuery)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	
+	queryFiltered := paperQuery.Apply(db.DB.Model(&model.Paper{}))
+
+	err = queryFiltered.Find(&papers).Error; 
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
