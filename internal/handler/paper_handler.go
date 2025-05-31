@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 	"paper-app-backend/internal/model"
 	"paper-app-backend/internal/db"
+	"strconv"
 )
 
 func GetPapers(c *gin.Context) {
@@ -90,4 +91,31 @@ func UpdatePaperWithDB(c *gin.Context, db *gorm.DB) {
 	}
 
 	c.JSON(http.StatusOK, updatedPaper)
+}
+
+func DeletePaper(c *gin.Context) {
+	DeletePaperWithDB(c, db.DB)
+}
+
+func DeletePaperWithDB(c *gin.Context, db *gorm.DB) {
+	var paper model.Paper
+	var err error
+
+	paper.ID, err = strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid paper ID"})
+		return
+	}
+
+	if err := db.First(&paper).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Paper not found"})
+		return
+	}
+
+	if err := db.Delete(&paper).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
 }

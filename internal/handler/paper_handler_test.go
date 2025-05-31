@@ -43,6 +43,15 @@ func setupPutRouter(db *gorm.DB) *gin.Engine {
 	return r
 }
 
+func setupDeleteRouter(db *gorm.DB) *gin.Engine {
+	gin.SetMode(gin.TestMode)
+	r := gin.Default()
+	r.DELETE("/api/papers/:id", func(c *gin.Context) {
+		handler.DeletePaperWithDB(c, db)
+	})
+	return r
+}
+
 func TestGetPapers_WithQuery(t *testing.T) {
     db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
     db.AutoMigrate(&model.Paper{})
@@ -169,4 +178,30 @@ func TestUpdatePaper_Success(t *testing.T) {
 
 	require.Equal(t, http.StatusOK, w.Code)
 	require.Contains(t, w.Body.String(), "Updated Title")
+}
+
+func TestDeletePaper_Success(t *testing.T) {
+	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	db.AutoMigrate(&model.Paper{})
+
+	// まずはPaperを作成
+	paper := model.Paper{
+		Title: "Paper to Delete",
+		Conference: "Conference",
+		Year: 2023,
+	}
+	db.Create(&paper)
+
+	router := setupDeleteRouter(db)
+
+	req, _ := http.NewRequest("DELETE", "/api/papers/"+strconv.Itoa(paper.ID), nil)
+	w := httptest.NewRecorder()
+
+	router.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusNoContent, w.Code)
+
+	var deletedPaper model.Paper
+	err := db.First(&deletedPaper, paper.ID).Error
+	require.Error(t, err) // Paperが削除されているはず
 }
