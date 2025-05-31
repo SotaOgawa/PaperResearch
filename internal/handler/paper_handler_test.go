@@ -13,6 +13,7 @@ import (
     "paper-app-backend/internal/handler"
     "paper-app-backend/internal/model"
 	"bytes"
+	"strconv"
 )
 
 func setupGetRouter(db *gorm.DB) *gin.Engine {
@@ -29,6 +30,15 @@ func setupPostRouter(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
 	r.POST("/api/papers", func(c *gin.Context) {
 		handler.CreatePaperWithDB(c, db)
+	})
+	return r
+}
+
+func setupPutRouter(db *gorm.DB) *gin.Engine {
+	gin.SetMode(gin.TestMode)
+	r := gin.Default()
+	r.PUT("/api/papers/:id", func(c *gin.Context) {
+		handler.UpdatePaperWithDB(c, db)
 	})
 	return r
 }
@@ -128,4 +138,35 @@ func TestCreatePaper_InvalidJSON_ShouldFail(t *testing.T) {
 
 	require.Equal(t, http.StatusBadRequest, w.Code)
 	require.Contains(t, w.Body.String(), "invalid input data")
+}
+
+func TestUpdatePaper_Success(t *testing.T) {
+	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	db.AutoMigrate(&model.Paper{})
+
+	// まずはPaperを作成
+	paper := model.Paper{
+		Title: "Old Title",
+		Conference: "Old Conference",
+		Year: 2023,
+	}
+	db.Create(&paper)
+
+	router := setupPutRouter(db)
+
+	body := `{
+		"id": ` + strconv.Itoa(paper.ID) + `,
+		"title": "Updated Title",
+		"conference": "Updated Conference",
+		"year": 2024
+	}`
+
+	req, _ := http.NewRequest("PUT", "/api/papers/"+strconv.Itoa(paper.ID), bytes.NewBufferString(body))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+
+	router.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusOK, w.Code)
+	require.Contains(t, w.Body.String(), "Updated Title")
 }
