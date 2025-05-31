@@ -170,4 +170,25 @@
   
 - 実装完了
 
-#### 
+#### SQLiteDBの実装, curlでの動作確認
+
+- テスト済み
+
+#### テストケース
+
+- すべてのAPI（GET, POST, PUT, DELETE）に対して単体テストを作成
+- Go + httptest + sqlite (in-memory) 、およびDBの注入により依存の少ない高速テストを実現
+- テスト実行:
+
+```bash
+go test ./... -cover
+```
+
+#### Sprint完了
+
+- Sprint Review
+  - API完成、テストケース完成
+  - カバレッジは60%程度なので今後余裕を見つけて拡充
+- Sprint Retrospective
+  - 今のところかなり順調
+  - CI/CDの導入を考えたい
