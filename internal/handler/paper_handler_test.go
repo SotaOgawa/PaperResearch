@@ -12,26 +12,25 @@ import (
 
     "paper-app-backend/internal/handler"
     "paper-app-backend/internal/model"
+	"bytes"
 )
 
-func setupTestRouter(db *gorm.DB) *gin.Engine {
+func setupGetRouter(db *gorm.DB) *gin.Engine {
     gin.SetMode(gin.TestMode)
     r := gin.Default()
     r.GET("/api/papers", func(c *gin.Context) {
-        var papers []model.Paper
-        var paperQuery handler.PaperQuery
-        if err := c.ShouldBindQuery(&paperQuery); err != nil {
-            c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-            return
-        }
-        filtered := paperQuery.Apply(db.Model(&model.Paper{}))
-        if err := filtered.Find(&papers).Error; err != nil {
-            c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-            return
-        }
-        c.JSON(http.StatusOK, papers)
+        handler.GetPapersWithDB(c, db)
     })
     return r
+}
+
+func setupPostRouter(db *gorm.DB) *gin.Engine {
+	gin.SetMode(gin.TestMode)
+	r := gin.Default()
+	r.POST("/api/papers", func(c *gin.Context) {
+		handler.CreatePaperWithDB(c, db)
+	})
+	return r
 }
 
 func TestGetPapers_WithQuery(t *testing.T) {
@@ -39,7 +38,7 @@ func TestGetPapers_WithQuery(t *testing.T) {
     db.AutoMigrate(&model.Paper{})
     db.Create(&model.Paper{Title: "Transformer", Conference: "ICLR", Year: 2023})
 
-    router := setupTestRouter(db)
+    router := setupGetRouter(db)
 
     req, _ := http.NewRequest("GET", "/api/papers?title=Transformer", nil)
     w := httptest.NewRecorder()
@@ -53,7 +52,7 @@ func TestGetPapers_EmptyResult(t *testing.T) {
     db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
     db.AutoMigrate(&model.Paper{})
 
-    router := setupTestRouter(db)
+    router := setupGetRouter(db)
 
     req, _ := http.NewRequest("GET", "/api/papers?title=Nonexistent", nil)
     w := httptest.NewRecorder()
@@ -61,4 +60,72 @@ func TestGetPapers_EmptyResult(t *testing.T) {
 
     require.Equal(t, 200, w.Code)
     require.NotContains(t, w.Body.String(), "Nonexistent")
+}
+
+func TestCreatePaper_Success(t *testing.T) {
+	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	db.AutoMigrate(&model.Paper{})
+
+	router := setupPostRouter(db)
+
+	body := `{
+		"title": "Test Paper",
+		"conference": "TestConf",
+		"year": 2024,
+		"abstract": "This is a test",
+		"url": "https://example.com",
+		"citation_count": 5,
+		"bibtex": "@article{...}",
+		"pdf_url": "https://example.com/test.pdf"
+	}`
+
+	req, _ := http.NewRequest("POST", "/api/papers", bytes.NewBufferString(body))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+
+	router.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusCreated, w.Code)
+	require.Contains(t, w.Body.String(), "Test Paper")
+}
+
+func TestCreatePaper_WithID_ShouldFail(t *testing.T) {
+	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	db.AutoMigrate(&model.Paper{})
+
+	router := setupPostRouter(db)
+
+	// IDを指定している
+	body := `{
+		"id": 1,
+		"title": "Should Fail",
+		"year": 2024
+	}`
+
+	req, _ := http.NewRequest("POST", "/api/papers", bytes.NewBufferString(body))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+
+	router.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusBadRequest, w.Code)
+	require.Contains(t, w.Body.String(), "ID should not be provided")
+}
+
+func TestCreatePaper_InvalidJSON_ShouldFail(t *testing.T) {
+	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	db.AutoMigrate(&model.Paper{})
+
+	router := setupPostRouter(db)
+
+	body := `{ "title": "Incomplete JSON", ` // ← JSON壊れてる
+
+	req, _ := http.NewRequest("POST", "/api/papers", bytes.NewBufferString(body))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+
+	router.ServeHTTP(w, req)
+
+	require.Equal(t, http.StatusBadRequest, w.Code)
+	require.Contains(t, w.Body.String(), "invalid input data")
 }
