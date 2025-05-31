@@ -119,3 +119,7 @@ func DeletePaperWithDB(c *gin.Context, db *gorm.DB) {
 
 	c.JSON(http.StatusNoContent, nil)
 }
+
+func Ping(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"message": "pong"})
+}
