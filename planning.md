@@ -196,3 +196,28 @@ go test ./... -cover
 ### Sprint 3
 
 #### crawlerの実装
+
+- RawPaper式にした
+
+#### DBの構図を変更
+
+- 現在用いる予定であるOpenReviewのAPIでは著者の固有IDが取得可能なので、Authorテーブルにそれを用いてIdenticalな情報を付与可能
+- しかし他の手法で取得する論文(ASIACCS)ではこの方法が使えない、Authorが被った際の対処ができない
+- **著者を一人ずつ管理するのをやめ、Authorsとして一つの項目に押し込む**
+- 欠点: 著者での検索が少々厄介になるが仕方がない、完成を目指す
+
+##### paper テーブル
+| カラム名       | 型       | 説明                  |
+| -------------- | -------- | --------------------- |
+| id             | INTEGER  | 論文ID                |
+| title          | TEXT     | 論文タイトル          |
+| conference     | TEXT     | 学会名                |
+| year           | INTEGER  | 発表年                |
+| authors        | TEXT     | 著者(,で結合)         |
+| abstract       | TEXT     | 概要                  |
+| url            | TEXT     | リンク先 URL          |
+| citation_count | INTEGER  | 引用数                |
+| bibtex         | TEXT     | BibTeX 文字列         |
+| pdf_url        | TEXT     | PDFリンク or 保存パス |
+| updated_at     | DATETIME | 更新日時              |
+| created_at     | DATETIME | 登録日時              |
