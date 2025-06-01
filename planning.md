@@ -195,10 +195,6 @@ go test ./... -cover
 
 ### Sprint 3
 
-#### crawlerの実装
-
-- RawPaper式にした
-
 #### DBの構図を変更
 
 - 現在用いる予定であるOpenReviewのAPIでは著者の固有IDが取得可能なので、Authorテーブルにそれを用いてIdenticalな情報を付与可能
@@ -207,6 +203,7 @@ go test ./... -cover
 - 欠点: 著者での検索が少々厄介になるが仕方がない、完成を目指す
 
 ##### paper テーブル
+
 | カラム名       | 型       | 説明                  |
 | -------------- | -------- | --------------------- |
 | id             | INTEGER  | 論文ID                |
@@ -221,3 +218,7 @@ go test ./... -cover
 | pdf_url        | TEXT     | PDFリンク or 保存パス |
 | updated_at     | DATETIME | 更新日時              |
 | created_at     | DATETIME | 登録日時              |
+
+#### crawlerの実装
+
+- RawPaper式にした
