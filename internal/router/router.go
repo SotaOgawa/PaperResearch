@@ -12,5 +12,6 @@ func SetupRoutes(r *gin.Engine) {
 		api.POST("/papers", handler.CreatePaper)         // 新規追加
 		api.PUT("/papers/:id", handler.UpdatePaper)      // 更新
 		api.DELETE("/papers/:id", handler.DeletePaper)   // 削除
+		api.GET("/ping", handler.Ping)                // 健康チェック
 	}
 }

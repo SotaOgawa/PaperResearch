@@ -31,7 +31,9 @@ func GetPapersWithDB(c *gin.Context, db *gorm.DB) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, papers)
+	c.JSON(http.StatusOK, gin.H{
+		"papers": papers,
+		"count":  len(papers)})
 }
 
 func CreatePaper(c *gin.Context) {
@@ -58,7 +60,8 @@ func CreatePaperWithDB(c *gin.Context, db *gorm.DB) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, newPaper)
+	c.JSON(http.StatusCreated, gin.H{
+		"paper": newPaper})
 }
 
 func UpdatePaper(c *gin.Context) {
@@ -90,7 +93,8 @@ func UpdatePaperWithDB(c *gin.Context, db *gorm.DB) {
 		return
 	}
 
-	c.JSON(http.StatusOK, updatedPaper)
+	c.JSON(http.StatusOK, gin.H{
+		"paper": updatedPaper})
 }
 
 func DeletePaper(c *gin.Context) {
@@ -118,4 +122,8 @@ func DeletePaperWithDB(c *gin.Context, db *gorm.DB) {
 	}
 
 	c.JSON(http.StatusNoContent, nil)
+}
+
+func Ping(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"message": "pong"})
 }
