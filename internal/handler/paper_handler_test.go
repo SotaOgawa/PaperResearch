@@ -1,28 +1,28 @@
 package handler_test
 
 import (
-    "net/http"
-    "net/http/httptest"
-    "testing"
+	"net/http"
+	"net/http/httptest"
+	"testing"
 
-    "github.com/gin-gonic/gin"
-    "github.com/stretchr/testify/require"
-    "gorm.io/driver/sqlite"
-    "gorm.io/gorm"
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/require"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 
-    "paper-app-backend/internal/handler"
-    "paper-app-backend/internal/model"
 	"bytes"
+	"paper-app-backend/internal/handler"
+	"paper-app-backend/internal/model"
 	"strconv"
 )
 
 func setupGetRouter(db *gorm.DB) *gin.Engine {
-    gin.SetMode(gin.TestMode)
-    r := gin.Default()
-    r.GET("/api/papers", func(c *gin.Context) {
-        handler.GetPapersWithDB(c, db)
-    })
-    return r
+	gin.SetMode(gin.TestMode)
+	r := gin.Default()
+	r.GET("/api/papers", func(c *gin.Context) {
+		handler.GetPapersWithDB(c, db)
+	})
+	return r
 }
 
 func setupPostRouter(db *gorm.DB) *gin.Engine {
@@ -53,37 +53,37 @@ func setupDeleteRouter(db *gorm.DB) *gin.Engine {
 }
 
 func TestGetPapers_WithQuery(t *testing.T) {
-    db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-    db.AutoMigrate(&model.Paper{})
-    db.Create(&model.Paper{Title: "Transformer", Conference: "ICLR", Year: 2023})
+	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	db.AutoMigrate(&model.PaperObjectInDB{})
+	db.Create(&model.PaperObjectInDB{Title: "Transformer", Conference: "ICLR", Year: 2023})
 
-    router := setupGetRouter(db)
+	router := setupGetRouter(db)
 
-    req, _ := http.NewRequest("GET", "/api/papers?title=Transformer", nil)
-    w := httptest.NewRecorder()
-    router.ServeHTTP(w, req)
+	req, _ := http.NewRequest("GET", "/api/papers?title=Transformer", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
 
-    require.Equal(t, 200, w.Code)
-    require.Contains(t, w.Body.String(), "Transformer")
+	require.Equal(t, 200, w.Code)
+	require.Contains(t, w.Body.String(), "Transformer")
 }
 
 func TestGetPapers_EmptyResult(t *testing.T) {
-    db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-    db.AutoMigrate(&model.Paper{})
+	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	db.AutoMigrate(&model.PaperObjectInDB{})
 
-    router := setupGetRouter(db)
+	router := setupGetRouter(db)
 
-    req, _ := http.NewRequest("GET", "/api/papers?title=Nonexistent", nil)
-    w := httptest.NewRecorder()
-    router.ServeHTTP(w, req)
+	req, _ := http.NewRequest("GET", "/api/papers?title=Nonexistent", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
 
-    require.Equal(t, 200, w.Code)
-    require.NotContains(t, w.Body.String(), "Nonexistent")
+	require.Equal(t, 200, w.Code)
+	require.NotContains(t, w.Body.String(), "Nonexistent")
 }
 
 func TestCreatePaper_Success(t *testing.T) {
 	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-	db.AutoMigrate(&model.Paper{})
+	db.AutoMigrate(&model.PaperObjectInDB{})
 
 	router := setupPostRouter(db)
 
@@ -91,6 +91,7 @@ func TestCreatePaper_Success(t *testing.T) {
 		"title": "Test Paper",
 		"conference": "TestConf",
 		"year": 2024,
+		"authors": "John Doe, Jane Smith",
 		"abstract": "This is a test",
 		"url": "https://example.com",
 		"citation_count": 5,
@@ -105,12 +106,25 @@ func TestCreatePaper_Success(t *testing.T) {
 	router.ServeHTTP(w, req)
 
 	require.Equal(t, http.StatusCreated, w.Code)
-	require.Contains(t, w.Body.String(), "Test Paper")
+
+	var createdPaper model.PaperObjectInDB
+	err := db.First(&createdPaper, "title = ?", "Test Paper").Error
+	require.NoError(t, err)
+	require.Equal(t, "Test Paper", createdPaper.Title)
+	require.Equal(t, "TestConf", createdPaper.Conference)
+	require.Equal(t, 2024, createdPaper.Year)
+	require.Equal(t, "John Doe, Jane Smith", createdPaper.Authors)
+	require.Equal(t, "This is a test", createdPaper.Abstract)
+	require.Equal(t, "https://example.com", createdPaper.URL)
+	require.Equal(t, 5, createdPaper.CitationCount)
+	require.Equal(t, "@article{...}", createdPaper.Bibtex)
+	require.Equal(t, "https://example.com/test.pdf", createdPaper.PDFURL)
+	require.NotZero(t, createdPaper.ID) // ID should be set after creation
 }
 
 func TestCreatePaper_WithID_ShouldFail(t *testing.T) {
 	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-	db.AutoMigrate(&model.Paper{})
+	db.AutoMigrate(&model.PaperObjectInDB{})
 
 	router := setupPostRouter(db)
 
@@ -133,7 +147,7 @@ func TestCreatePaper_WithID_ShouldFail(t *testing.T) {
 
 func TestCreatePaper_InvalidJSON_ShouldFail(t *testing.T) {
 	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-	db.AutoMigrate(&model.Paper{})
+	db.AutoMigrate(&model.PaperObjectInDB{})
 
 	router := setupPostRouter(db)
 
@@ -151,13 +165,13 @@ func TestCreatePaper_InvalidJSON_ShouldFail(t *testing.T) {
 
 func TestUpdatePaper_Success(t *testing.T) {
 	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-	db.AutoMigrate(&model.Paper{})
+	db.AutoMigrate(&model.PaperObjectInDB{})
 
 	// まずはPaperを作成
-	paper := model.Paper{
-		Title: "Old Title",
+	paper := model.PaperObjectInDB{
+		Title:      "Old Title",
 		Conference: "Old Conference",
-		Year: 2023,
+		Year:       2023,
 	}
 	db.Create(&paper)
 
@@ -182,13 +196,13 @@ func TestUpdatePaper_Success(t *testing.T) {
 
 func TestDeletePaper_Success(t *testing.T) {
 	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-	db.AutoMigrate(&model.Paper{})
+	db.AutoMigrate(&model.PaperObjectInDB{})
 
 	// まずはPaperを作成
-	paper := model.Paper{
-		Title: "Paper to Delete",
+	paper := model.PaperObjectInDB{
+		Title:      "Paper to Delete",
 		Conference: "Conference",
-		Year: 2023,
+		Year:       2023,
 	}
 	db.Create(&paper)
 
@@ -201,7 +215,7 @@ func TestDeletePaper_Success(t *testing.T) {
 
 	require.Equal(t, http.StatusNoContent, w.Code)
 
-	var deletedPaper model.Paper
+	var deletedPaper model.PaperObjectInDB
 	err := db.First(&deletedPaper, paper.ID).Error
 	require.Error(t, err) // Paperが削除されているはず
 }

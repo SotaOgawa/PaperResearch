@@ -2,11 +2,12 @@ package model
 
 import "time"
 
-type Paper struct {
+type PaperObjectInDB struct {
 	ID            int       `gorm:"primaryKey" json:"id"`
 	Title         string    `json:"title"`
 	Conference    string    `json:"conference"`
 	Year          int       `json:"year"`
+	Authors       string    `json:"authors"` // Comma-separated list of authors
 	Abstract      string    `json:"abstract"`
 	URL           string    `json:"url"`
 	CitationCount int       `json:"citation_count"`

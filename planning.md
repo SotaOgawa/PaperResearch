@@ -57,10 +57,40 @@
 ## DONE リスト（随時更新）
 
 - [x] API & DB 設計
-- [ ] Go: CRUD API 実装
+- [x] Go: CRUD API 実装
 - [ ] Next.js: UI 実装
-- [ ] arXiv 連携
+- [ ] 実際の論文情報の更新
 - [ ] デプロイ完了
+
+## 各種設計
+
+### DB構造
+
+#### papersテーブル
+
+| カラム名       | 型       | 説明                  |
+| -------------- | -------- | --------------------- |
+| id             | INTEGER  | 論文ID                |
+| title          | TEXT     | 論文タイトル          |
+| conference     | TEXT     | 学会名                |
+| year           | INTEGER  | 発表年                |
+| authors        | TEXT     | 著者(,で結合)         |
+| abstract       | TEXT     | 概要                  |
+| url            | TEXT     | リンク先 URL          |
+| citation_count | INTEGER  | 引用数                |
+| bibtex         | TEXT     | BibTeX 文字列         |
+| pdf_url        | TEXT     | PDFリンク or 保存パス |
+| updated_at     | DATETIME | 更新日時              |
+| created_at     | DATETIME | 登録日時              |
+
+### API構造
+
+  | メソッド | エンドポイント    | 内容                         |
+  | -------- | ----------------- | ---------------------------- |
+  | GET      | `/api/papers`     | 論文一覧の取得               |
+  | POST     | `/api/papers`     | 論文の新規登録|
+  | PUT      | `/api/papers/:id` | 論文の更新                   |
+  | DELETE   | `/api/papers/:id` | 論文の削除                   |
 
 ## 開発履歴
 
@@ -108,19 +138,20 @@
 
 ##### papers テーブル
 
-| カラム名       | 型       | 説明                   |
-| -------------- | -------- | ---------------------- |
+| カラム名       | 型       | 説明                  |
+| -------------- | -------- | --------------------- |
 | id             | INTEGER  | 論文ID                |
-| title          | TEXT     | 論文タイトル           |
-| conference     | TEXT     | 学会名                 |
-| year           | INTEGER  | 発表年                 |
-| abstract       | TEXT     | 概要                   |
-| url            | TEXT     | リンク先 URL           |
-| citation_count | INTEGER  | 引用数                 |
-| bibtex         | TEXT     | BibTeX 文字列          |
+| title          | TEXT     | 論文タイトル          |
+| conference     | TEXT     | 学会名                |
+| year           | INTEGER  | 発表年                |
+| authors        | TEXT     | 著者(,で結合)         |
+| abstract       | TEXT     | 概要                  |
+| url            | TEXT     | リンク先 URL          |
+| citation_count | INTEGER  | 引用数                |
+| bibtex         | TEXT     | BibTeX 文字列         |
 | pdf_url        | TEXT     | PDFリンク or 保存パス |
-| updated_at     | DATETIME | 更新日時               |
-| created_at     | DATETIME | 登録日時               |
+| updated_at     | DATETIME | 更新日時              |
+| created_at     | DATETIME | 登録日時              |
 
 ##### authors テーブル
 
@@ -196,12 +227,37 @@ go test ./... -cover
 
 ### Sprint 3
 
-#### CI/CDの導入
+#### DBの構図を変更
 
-- 一旦見送り
+- 現在用いる予定であるOpenReviewのAPIでは著者の固有IDが取得可能なので、Authorテーブルにそれを用いてIdenticalな情報を付与可能
+- しかし他の手法で取得する論文(ASIACCS)ではこの方法が使えない、Authorが被った際の対処ができない
+- **著者を一人ずつ管理するのをやめ、Authorsとして一つの項目に押し込む**
+- 欠点: 著者での検索が少々厄介になるが仕方がない、完成を目指す
 
-#### pingの導入
+##### paper テーブル
 
-- ping/pongを実装した。
+| カラム名       | 型       | 説明                  |
+| -------------- | -------- | --------------------- |
+| id             | INTEGER  | 論文ID                |
+| title          | TEXT     | 論文タイトル          |
+| conference     | TEXT     | 学会名                |
+| year           | INTEGER  | 発表年                |
+| authors        | TEXT     | 著者(,で結合)         |
+| abstract       | TEXT     | 概要                  |
+| url            | TEXT     | リンク先 URL          |
+| citation_count | INTEGER  | 引用数                |
+| bibtex         | TEXT     | BibTeX 文字列         |
+| pdf_url        | TEXT     | PDFリンク or 保存パス |
+| updated_at     | DATETIME | 更新日時              |
+| created_at     | DATETIME | 登録日時              |
 
-#### 
+#### crawlerの実装
+
+- OpenReviewからダウンロードされる形式、DBに保存する構造などを一つずつ定義した
+- まず、OpenReviewから取得できる情報のうち、Title, Authors, Year, Conferenceのみを登録するRawPaperテーブルを保存。
+- 次に外部APIを用いてabstractなどを逐次保存していく。
+- ICMLを試しにRawPaper形式で登録できるようにして、動作を確認
+
+#### Next.jsを用いたフロントの登録
+
+- 

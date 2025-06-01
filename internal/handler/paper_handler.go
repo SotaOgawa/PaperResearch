@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"net/http"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"paper-app-backend/internal/model"
+	"net/http"
 	"paper-app-backend/internal/db"
+	"paper-app-backend/internal/model"
 	"strconv"
 )
 
@@ -14,7 +14,7 @@ func GetPapers(c *gin.Context) {
 }
 
 func GetPapersWithDB(c *gin.Context, db *gorm.DB) {
-	var papers []model.Paper
+	var papers []model.PaperObjectInDB
 	var paperQuery PaperSearchQuery
 
 	err := c.ShouldBindQuery(&paperQuery)
@@ -22,10 +22,10 @@ func GetPapersWithDB(c *gin.Context, db *gorm.DB) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	queryFiltered := paperQuery.Apply(db)
 
-	err = queryFiltered.Find(&papers).Error; 
+	err = queryFiltered.Find(&papers).Error
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -39,10 +39,10 @@ func CreatePaper(c *gin.Context) {
 }
 
 func CreatePaperWithDB(c *gin.Context, db *gorm.DB) {
-	var newPaper model.Paper
+	var newPaper model.PaperObjectInDB
 
-	err := c.ShouldBindJSON(&newPaper); 
-	
+	err := c.ShouldBindJSON(&newPaper)
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid input data"})
 		return
@@ -66,9 +66,9 @@ func UpdatePaper(c *gin.Context) {
 }
 
 func UpdatePaperWithDB(c *gin.Context, db *gorm.DB) {
-	var updatedPaper model.Paper
+	var updatedPaper model.PaperObjectInDB
 
-	err := c.ShouldBindJSON(&updatedPaper); 
+	err := c.ShouldBindJSON(&updatedPaper)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid input data"})
 		return
@@ -79,7 +79,7 @@ func UpdatePaperWithDB(c *gin.Context, db *gorm.DB) {
 		return
 	}
 
-	var existing model.Paper
+	var existing model.PaperObjectInDB
 	if err := db.First(&existing, updatedPaper.ID).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Paper not found"})
 		return
@@ -98,7 +98,7 @@ func DeletePaper(c *gin.Context) {
 }
 
 func DeletePaperWithDB(c *gin.Context, db *gorm.DB) {
-	var paper model.Paper
+	var paper model.PaperObjectInDB
 	var err error
 
 	paper.ID, err = strconv.Atoi(c.Param("id"))
@@ -119,7 +119,10 @@ func DeletePaperWithDB(c *gin.Context, db *gorm.DB) {
 
 	c.JSON(http.StatusNoContent, nil)
 }
+<<<<<<< HEAD
 
 func Ping(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "pong"})
 }
+=======
+>>>>>>> master
