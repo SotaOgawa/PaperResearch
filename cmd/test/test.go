@@ -24,12 +24,12 @@ func main() {
 	}
 	fmt.Println("Papers count:", len(result))
 	for i, paper := range result {
-		fmt.Printf("Paper %d: ID=%v, Title=%v, Authors=%v, Venue=%v, Year=%v\n",
+		fmt.Printf("Paper %d: ID=%v, Title=%v, Authors=%v, Conference=%v, Year=%v\n",
 			i+1,
 			paper["id"],
 			paper["title"],
 			paper["authors"],
-			paper["venue"],
+			paper["conference"],
 			paper["year"])
 
 		if i >= 10 { // 最初の10件だけ表示

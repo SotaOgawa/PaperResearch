@@ -106,7 +106,20 @@ func TestCreatePaper_Success(t *testing.T) {
 	router.ServeHTTP(w, req)
 
 	require.Equal(t, http.StatusCreated, w.Code)
-	require.Contains(t, w.Body.String(), "Test Paper")
+
+	var createdPaper model.PaperObjectInDB
+	err := db.First(&createdPaper, "title = ?", "Test Paper").Error
+	require.NoError(t, err)
+	require.Equal(t, "Test Paper", createdPaper.Title)
+	require.Equal(t, "TestConf", createdPaper.Conference)
+	require.Equal(t, 2024, createdPaper.Year)
+	require.Equal(t, "John Doe, Jane Smith", createdPaper.Authors)
+	require.Equal(t, "This is a test", createdPaper.Abstract)
+	require.Equal(t, "https://example.com", createdPaper.URL)
+	require.Equal(t, 5, createdPaper.CitationCount)
+	require.Equal(t, "@article{...}", createdPaper.Bibtex)
+	require.Equal(t, "https://example.com/test.pdf", createdPaper.PDFURL)
+	require.NotZero(t, createdPaper.ID) // ID should be set after creation
 }
 
 func TestCreatePaper_WithID_ShouldFail(t *testing.T) {

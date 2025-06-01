@@ -20,19 +20,25 @@ func main() {
 	for _, paper := range paperlist {
 		paper_title := paper.Title
 		paper_authors := paper.Authors
-		paper_Venue := paper.Venue
+		paper_Conference := paper.Venue
 		paper_year := paper.Year
 
 		paper_author_joined := strings.Join(paper_authors, ", ")
 
 		paperInDB := crawler.RawPaperInDB{
-			Title:   paper_title,
-			Authors: paper_author_joined,
-			Venue:   paper_Venue,
-			Year:    paper_year,
+			Title:      paper_title,
+			Authors:    paper_author_joined,
+			Conference: paper_Conference,
+			Year:       paper_year,
 		}
 
+		fmt.Printf("Crawled paper: %s, Authors: %s, Conference: %s, Year: %d\n",
+			paperInDB.Title, paperInDB.Authors, paperInDB.Conference, paperInDB.Year)
+
 		jsonBytes, _ := json.Marshal(paperInDB)
+
+		//jsonBytesの内容を確認
+		fmt.Printf("JSON Payload: %s\n", jsonBytes)
 
 		req, _ := http.NewRequest("POST", `http://localhost:8080/api/papers`, bytes.NewBuffer(jsonBytes))
 		req.Header.Set("Content-Type", "application/json")
