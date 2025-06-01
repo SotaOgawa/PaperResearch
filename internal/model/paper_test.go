@@ -12,9 +12,9 @@ func TestPaper_SaveAndQuery(t *testing.T) {
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	require.NoError(t, err)
 
-	db.AutoMigrate((&model.Paper{}))
+	db.AutoMigrate((&model.PaperObjectInDB{}))
 
-	p := model.Paper{
+	p := model.PaperObjectInDB{
 		Title:      "Test Paper",
 		Abstract:   "This is a test abstract.",
 		Conference: "Test Conference",
@@ -23,7 +23,7 @@ func TestPaper_SaveAndQuery(t *testing.T) {
 	err = db.Create(&p).Error
 	require.NoError(t, err)
 
-	var result model.Paper
+	var result model.PaperObjectInDB
 	err = db.First(&result, "title = ?", "Test Paper").Error
 	require.NoError(t, err)
 	require.Equal(t, "Test Paper", result.Title)

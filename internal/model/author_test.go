@@ -12,16 +12,16 @@ func TestAuthor_SaveAndQuery(t *testing.T) {
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	require.NoError(t, err)
 
-	db.AutoMigrate((&model.Author{}))
+	db.AutoMigrate((&model.AuthorObjectInDB{}))
 
-	p := model.Author{
+	p := model.AuthorObjectInDB{
 		Name: "Test Author",
 		ID:   10,
 	}
 	err = db.Create(&p).Error
 	require.NoError(t, err)
 
-	var result model.Author
+	var result model.AuthorObjectInDB
 	err = db.First(&result, "ID = ?", 10).Error
 	require.NoError(t, err)
 	require.Equal(t, "Test Author", result.Name)

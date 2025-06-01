@@ -17,7 +17,7 @@ func InitDB() {
 	}
 
 	// マイグレーション
-	err = DB.AutoMigrate(&model.Paper{})
+	err = DB.AutoMigrate(&model.PaperObjectInDB{})
 	if err != nil {
 		log.Fatalf("failed to migrate database: %v", err)
 	}

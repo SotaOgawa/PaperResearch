@@ -54,8 +54,8 @@ func setupDeleteRouter(db *gorm.DB) *gin.Engine {
 
 func TestGetPapers_WithQuery(t *testing.T) {
 	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-	db.AutoMigrate(&model.Paper{})
-	db.Create(&model.Paper{Title: "Transformer", Conference: "ICLR", Year: 2023})
+	db.AutoMigrate(&model.PaperObjectInDB{})
+	db.Create(&model.PaperObjectInDB{Title: "Transformer", Conference: "ICLR", Year: 2023})
 
 	router := setupGetRouter(db)
 
@@ -69,7 +69,7 @@ func TestGetPapers_WithQuery(t *testing.T) {
 
 func TestGetPapers_EmptyResult(t *testing.T) {
 	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-	db.AutoMigrate(&model.Paper{})
+	db.AutoMigrate(&model.PaperObjectInDB{})
 
 	router := setupGetRouter(db)
 
@@ -83,7 +83,7 @@ func TestGetPapers_EmptyResult(t *testing.T) {
 
 func TestCreatePaper_Success(t *testing.T) {
 	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-	db.AutoMigrate(&model.Paper{})
+	db.AutoMigrate(&model.PaperObjectInDB{})
 
 	router := setupPostRouter(db)
 
@@ -110,7 +110,7 @@ func TestCreatePaper_Success(t *testing.T) {
 
 func TestCreatePaper_WithID_ShouldFail(t *testing.T) {
 	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-	db.AutoMigrate(&model.Paper{})
+	db.AutoMigrate(&model.PaperObjectInDB{})
 
 	router := setupPostRouter(db)
 
@@ -133,7 +133,7 @@ func TestCreatePaper_WithID_ShouldFail(t *testing.T) {
 
 func TestCreatePaper_InvalidJSON_ShouldFail(t *testing.T) {
 	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-	db.AutoMigrate(&model.Paper{})
+	db.AutoMigrate(&model.PaperObjectInDB{})
 
 	router := setupPostRouter(db)
 
@@ -151,10 +151,10 @@ func TestCreatePaper_InvalidJSON_ShouldFail(t *testing.T) {
 
 func TestUpdatePaper_Success(t *testing.T) {
 	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-	db.AutoMigrate(&model.Paper{})
+	db.AutoMigrate(&model.PaperObjectInDB{})
 
 	// まずはPaperを作成
-	paper := model.Paper{
+	paper := model.PaperObjectInDB{
 		Title:      "Old Title",
 		Conference: "Old Conference",
 		Year:       2023,
@@ -182,10 +182,10 @@ func TestUpdatePaper_Success(t *testing.T) {
 
 func TestDeletePaper_Success(t *testing.T) {
 	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-	db.AutoMigrate(&model.Paper{})
+	db.AutoMigrate(&model.PaperObjectInDB{})
 
 	// まずはPaperを作成
-	paper := model.Paper{
+	paper := model.PaperObjectInDB{
 		Title:      "Paper to Delete",
 		Conference: "Conference",
 		Year:       2023,
@@ -201,7 +201,7 @@ func TestDeletePaper_Success(t *testing.T) {
 
 	require.Equal(t, http.StatusNoContent, w.Code)
 
-	var deletedPaper model.Paper
+	var deletedPaper model.PaperObjectInDB
 	err := db.First(&deletedPaper, paper.ID).Error
 	require.Error(t, err) // Paperが削除されているはず
 }

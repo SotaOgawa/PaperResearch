@@ -14,7 +14,7 @@ func GetPapers(c *gin.Context) {
 }
 
 func GetPapersWithDB(c *gin.Context, db *gorm.DB) {
-	var papers []model.Paper
+	var papers []model.PaperObjectInDB
 	var paperQuery PaperSearchQuery
 
 	err := c.ShouldBindQuery(&paperQuery)
@@ -39,7 +39,7 @@ func CreatePaper(c *gin.Context) {
 }
 
 func CreatePaperWithDB(c *gin.Context, db *gorm.DB) {
-	var newPaper model.Paper
+	var newPaper model.PaperObjectInDB
 
 	err := c.ShouldBindJSON(&newPaper)
 
@@ -66,7 +66,7 @@ func UpdatePaper(c *gin.Context) {
 }
 
 func UpdatePaperWithDB(c *gin.Context, db *gorm.DB) {
-	var updatedPaper model.Paper
+	var updatedPaper model.PaperObjectInDB
 
 	err := c.ShouldBindJSON(&updatedPaper)
 	if err != nil {
@@ -79,7 +79,7 @@ func UpdatePaperWithDB(c *gin.Context, db *gorm.DB) {
 		return
 	}
 
-	var existing model.Paper
+	var existing model.PaperObjectInDB
 	if err := db.First(&existing, updatedPaper.ID).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Paper not found"})
 		return
@@ -98,7 +98,7 @@ func DeletePaper(c *gin.Context) {
 }
 
 func DeletePaperWithDB(c *gin.Context, db *gorm.DB) {
-	var paper model.Paper
+	var paper model.PaperObjectInDB
 	var err error
 
 	paper.ID, err = strconv.Atoi(c.Param("id"))
