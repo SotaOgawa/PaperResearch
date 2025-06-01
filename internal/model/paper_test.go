@@ -17,6 +17,7 @@ func TestPaper_SaveAndQuery(t *testing.T) {
 	p := model.PaperObjectInDB{
 		Title:      "Test Paper",
 		Abstract:   "This is a test abstract.",
+		Authors:    "John Doe, Jane Smith",
 		Conference: "Test Conference",
 		Year:       2023,
 	}

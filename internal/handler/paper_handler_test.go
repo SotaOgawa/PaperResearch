@@ -91,6 +91,7 @@ func TestCreatePaper_Success(t *testing.T) {
 		"title": "Test Paper",
 		"conference": "TestConf",
 		"year": 2024,
+		"authors": "John Doe, Jane Smith",
 		"abstract": "This is a test",
 		"url": "https://example.com",
 		"citation_count": 5,
