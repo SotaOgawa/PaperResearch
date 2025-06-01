@@ -2,6 +2,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import HomePage from "../pages/index";
 import * as api from "../lib/api";
+import '@testing-library/jest-dom';
 
 // モックデータ
 const mockPapers = [
