@@ -7,6 +7,13 @@ type RawPaper struct {
 	Year    int      `json:"year"`
 }
 
+type RawPaperInDB struct {
+	Title   string `json:"title"`
+	Authors string `json:"authors"` // Comma-separated list of authors
+	Venue   string `json:"venue"`
+	Year    int    `json:"year"`
+}
+
 type ConferenceCrawler interface {
 	Crawl() ([]RawPaper, error)
 	Name() string

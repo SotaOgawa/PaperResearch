@@ -28,4 +28,9 @@ func TestPaper_SaveAndQuery(t *testing.T) {
 	err = db.First(&result, "title = ?", "Test Paper").Error
 	require.NoError(t, err)
 	require.Equal(t, "Test Paper", result.Title)
+	require.Equal(t, "This is a test abstract.", result.Abstract)
+	require.Equal(t, "John Doe, Jane Smith", result.Authors)
+	require.Equal(t, "Test Conference", result.Conference)
+	require.Equal(t, 2023, result.Year)
+	require.NotZero(t, result.ID) // ID should be set after creation
 }
