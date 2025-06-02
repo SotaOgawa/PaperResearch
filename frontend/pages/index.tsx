@@ -4,6 +4,7 @@ import { fetchJSON } from "../lib/api";
 import { postJSON } from "../lib/api";
 import { putJSON } from "../lib/api";
 import { deleteJSON } from "../lib/api";
+import PaperModal from '../components/PaperModal';
 
 type Paper = {
   id: number;
@@ -26,6 +27,7 @@ export default function HomePage() {
   const [results, setResults] = useState<Paper[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [selectedPaper, setSelectedPaper] = useState<Paper | null>(null);
 
   const handleSearch = async () => {
     const params = new URLSearchParams();
@@ -78,7 +80,7 @@ export default function HomePage() {
 
       <div className="space-y-4">
         {results.map((paper) => (
-          <div key={paper.id} className="p-4 border rounded bg-white shadow-sm">
+          <div key={paper.id} className="p-4 border rounded bg-white shadow-sm" onClick={()=> setSelectedPaper(paper)}>
             <div className="font-bold text-lg text-gray-800">{paper.title}</div>
             <div className="text-sm text-gray-600">{paper.authors}</div>
             <div className="text-sm text-gray-500">
@@ -95,6 +97,13 @@ export default function HomePage() {
           </div>
         ))}
       </div>
+
+      {selectedPaper && (
+        <PaperModal
+          paper={selectedPaper}
+          onClose={() => setSelectedPaper(null)}
+        />
+      )}
     </div>
   );
 }
