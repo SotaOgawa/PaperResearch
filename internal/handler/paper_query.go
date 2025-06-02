@@ -5,7 +5,7 @@ import (
 )
 
 type PaperSearchQuery struct {
-	ID         int    `form:"ID"`
+	ID         int    `form:"id"`
 	Title      string `form:"title"`
 	Conference string `form:"conference"`
 	Year       int    `form:"year"`
