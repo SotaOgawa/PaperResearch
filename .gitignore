@@ -65,4 +65,6 @@ sandbox.go
 
 papers.db
 
+sandbox/
+
 # End of https://www.toptal.com/developers/gitignore/api/go,nextjs

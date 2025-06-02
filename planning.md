@@ -58,7 +58,7 @@
 
 - [x] API & DB 設計
 - [x] Go: CRUD API 実装
-- [ ] Next.js: UI 実装
+- [x] Next.js: UI 実装
 - [ ] 実際の論文情報の更新
 - [ ] デプロイ完了
 
@@ -288,3 +288,7 @@ go test ./... -cover
 - Sprint Retrospective
   - フロントとバックの連携が想定通りに動作した
   - テスト・スタイリング・状態管理など一通り実装できたため、次Sprintはより具体的なシステム設計に着手する。
+
+### Sprint 4
+
+- 
