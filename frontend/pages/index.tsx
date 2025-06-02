@@ -86,14 +86,6 @@ export default function HomePage() {
             <div className="text-sm text-gray-500">
               {paper.conference} / {paper.year}
             </div>
-            <a
-              href={paper.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 text-sm underline"
-            >
-              論文リンク
-            </a>
           </div>
         ))}
       </div>
