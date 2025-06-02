@@ -7,12 +7,12 @@ interface Props {
 
 export default function PaperModal({ paper, onClose }: Props) {
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50">
-      <div className="bg-white z-50 rounded-xl shadow-lg p-6 w-full max-w-2xl">
-        <button onClick={onClose} className="absolute top-2 right-2 text-gray-500 hover:text-black text-xl font-bold">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50" onClick={onClose}>
+      <div className="bg-white z-50 rounded-xl shadow-lg p-6 w-full max-w-2xl text-gray-900 relative" onClick={(e) => e.stopPropagation()}>
+        <button onClick={onClose} className="absolute top-2 right-2 text-gray-900 hover:text-black text-xl font-bold">
           ×
         </button>
-        <h2 className="text-xl font-bold mb-4">{paper.title}</h2>
+        <h2 className="text-xl font-bold mb-4 text-gray-900" >{paper.title}</h2>
         <div className="space-y-2 text-sm">
           <p><strong>著者:</strong> {paper.authors || '未入力'}</p>
           <p><strong>学会:</strong> {paper.conference || '未入力'}</p>
