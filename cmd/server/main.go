@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"os"
 	"paper-app-backend/internal/db"
 	"paper-app-backend/internal/router"
 )
@@ -22,6 +23,11 @@ func main() {
 		MaxAge:           12 * 3600,                                // CORSのキャッシュ時間
 	}))
 
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // デフォルトのポート番号
+	}
+
 	router.SetupRoutes(r)
-	r.Run() // デフォルトは :8080
+	r.Run(":" + port)
 }

@@ -63,7 +63,7 @@ next-env.d.ts
 # test files
 sandbox.go
 
-papers.db
+# papers.db
 
 sandbox/
 
