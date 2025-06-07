@@ -1,4 +1,4 @@
-export const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api";
+export const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://paperresearch-production.up.railway.app/api";
 
 export async function fetchJSON<T>(url: string): Promise<T> {
   const response = await fetch(`${BASE_URL}${url}`);
