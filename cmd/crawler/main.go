@@ -46,7 +46,12 @@ func main() {
 			continue
 		}
 
-		jsonBytes, _ := json.Marshal(paperInDB)
+		if len(paperInDB) == 0 {
+			fmt.Printf("No data found for paper %s\n", paper_title)
+			continue
+		}
+
+		jsonBytes, _ := json.Marshal(paperInDB[0]) // paperInDBはスライスなので、最初の要素を取得
 
 		//jsonBytesの内容を確認
 		fmt.Printf("JSON Payload: %s\n", jsonBytes)

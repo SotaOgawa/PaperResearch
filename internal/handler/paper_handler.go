@@ -9,6 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func GetPapers(c *gin.Context) {
@@ -58,7 +59,13 @@ func CreatePaperWithDB(c *gin.Context, db *gorm.DB) {
 		return
 	}
 
-	if err := db.Create(&newPaper).Error; err != nil {
+	// Check if the paper with the same title already exists
+	err = db.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "title"}},
+		DoUpdates: clause.AssignmentColumns([]string{"abstract", "citation_count", "updated_at", "bibtex", "pdf_url", "url"}),
+	}).Create(&newPaper).Error
+
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
