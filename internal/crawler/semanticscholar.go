@@ -3,13 +3,14 @@ package crawler
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/joho/godotenv"
+	"gorm.io/gorm"
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"paper-app-backend/internal/model"
 	"strings"
-
-	"gorm.io/gorm"
 	// "strings"
 )
 
@@ -19,12 +20,20 @@ type SemanticScholarConferenceCrawler struct {
 func (c *SemanticScholarConferenceCrawler) Crawl(paper *model.PaperObjectInDB, db *gorm.DB) ([]model.PaperObjectInDB, error) {
 	BASE_URL := "https://api.semanticscholar.org/graph/v1/paper/search"
 
+	err := godotenv.Load(".env.local")
+	if err != nil {
+		return nil, fmt.Errorf("failed to load environment variables: %w", err)
+	}
+	apiKey := os.Getenv("SEMANTICSCHOLAR_API_KEY")
+
 	req_url := fmt.Sprintf(`%s?query=%s&fields=title,year,venue,abstract,citationCount,authors,url,citationStyles&limit=1`, BASE_URL, url.QueryEscape(paper.Title))
 
 	req, err := http.NewRequest("GET", req_url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
+
+	req.Header.Set("x-api-key", apiKey)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
