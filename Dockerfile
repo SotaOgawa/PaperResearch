@@ -14,6 +14,7 @@ RUN CGO_ENABLED=1 GOOS=linux go build -o server ./cmd/server
 
 RUN ls -l /app/ # ビルドされたバイナリを確認
 RUN ls -lh /app/server && file /app/server # バイナリの詳細を確認
+CMD ["/bin/sh", "-c", "echo 🔧 launching... && /app/server"]
 
 # 2. 実行ステージ（Golangに合わせた環境）
 FROM debian:bookworm-slim
