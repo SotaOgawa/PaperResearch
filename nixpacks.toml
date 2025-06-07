@@ -1,11 +1,11 @@
 [phases.setup]
-nixPkgs = ["go"]
+nixPkgs = ["go", "gcc"]
 
 [phases.install]
 cmds = ["go mod download"]
 
 [phases.build]
-cmds = ["go build -o /app/server ./cmd/server"]
+cmds = ["CGO_ENABLED=1 go build -o /app/server ./cmd/server"]
 
 [start]
 cmd = "/app/server"
