@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"os"
@@ -9,6 +10,7 @@ import (
 )
 
 func main() {
+	fmt.Println("🔥 server/main.go started")
 	// データベースの初期化
 	db.InitDB()
 
