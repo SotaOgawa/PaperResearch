@@ -18,11 +18,11 @@ func main() {
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"},        // フロントエンドのURLを指定
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"}, // 許可するHTTPメソッド
-		AllowHeaders:     []string{"Origin", "Content-Type"},       // 許可するヘッダー
-		AllowCredentials: true,                                     // Cookieを許可
-		MaxAge:           12 * 3600,                                // CORSのキャッシュ時間
+		AllowOrigins:     []string{"https://paper-research-three.vercel.app/"}, // フロントエンドのURLを指定
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},             // 許可するHTTPメソッド
+		AllowHeaders:     []string{"Origin", "Content-Type"},                   // 許可するヘッダー
+		AllowCredentials: true,                                                 // Cookieを許可
+		MaxAge:           12 * 3600,                                            // CORSのキャッシュ時間
 	}))
 
 	port := os.Getenv("PORT")
