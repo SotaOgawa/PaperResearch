@@ -61,7 +61,7 @@ func CreatePaperWithDB(c *gin.Context, db *gorm.DB) {
 
 	// Check if the paper with the same title already exists
 	err = db.Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "title"}},
+		Columns:   []clause.Column{{Name: "title"}, {Name: "authors"}, {Name: "conference"}},
 		DoUpdates: clause.AssignmentColumns([]string{"abstract", "citation_count", "updated_at", "bibtex", "pdf_url", "url"}),
 	}).Create(&newPaper).Error
 
