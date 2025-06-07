@@ -20,7 +20,9 @@ FROM debian:bullseye-slim
 WORKDIR /app
 
 COPY --from=builder /app/server /app/server
-COPY --from=builder /app/papers.db /app/papers.db # 必要に応じて
+COPY --from=builder /app/papers.db /tmp/papers.db
+RUN ls -l /tmp/
+
 COPY --from=builder /etc/ssl/certs /etc/ssl/certs
 
 EXPOSE 8080
