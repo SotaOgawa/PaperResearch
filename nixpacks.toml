@@ -1,0 +1,8 @@
+[phases.setup]
+nixPkgs = ["go"]
+
+[phases.build]
+cmds = ["go build -o server ./cmd/server"]
+
+[phases.start]
+cmd = "./server"
