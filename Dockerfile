@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y gcc
 
 RUN CGO_ENABLED=1 GOOS=linux go build -o server ./cmd/server
 
+RUN ls -l /app/ # ビルドされたバイナリを確認
+
 # 2. 実行ステージ（小さくて安全）
 FROM debian:bullseye-slim
 
