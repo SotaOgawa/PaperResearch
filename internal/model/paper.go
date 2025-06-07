@@ -6,8 +6,8 @@ type PaperObjectInDB struct {
 	ID            int       `gorm:"primaryKey" json:"id"`
 	Title         string    `gorm:"index:idx_unique_paper,unique" json:"title"`
 	Conference    string    `gorm:"index:idx_unique_paper,unique" json:"conference"`
-	Year          int       `gorm:"index:idx_unique_paper,unique" json:"year"`
-	Authors       string    `json:"authors"` // Comma-separated list of authors
+	Year          int       `json:"year"`
+	Authors       string    `gorm:"index:idx_unique_paper,unique" json:"authors"` // Comma-separated list of authors
 	Abstract      string    `json:"abstract"`
 	URL           string    `json:"url"`
 	CitationCount int       `json:"citation_count"`
